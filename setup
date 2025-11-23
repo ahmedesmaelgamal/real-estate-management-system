@@ -1,0 +1,41 @@
+#!/bin/bash
+
+echo "🔧 Creating storage folders..."
+mkdir -p storage/framework/{cache,sessions,views} storage/logs
+
+echo "📄 Copying .env file..."
+cp .env.example .env
+
+# ثابتين
+dbuser="root"
+dbpass="123456"
+
+# إدخال اسم قاعدة البيانات فقط
+read -p "Database Name: " dbname
+
+# تعديل ملف .env
+sed -i "s/DB_DATABASE=.*/DB_DATABASE=${dbname}/" .env
+sed -i "s/DB_USERNAME=.*/DB_USERNAME=${dbuser}/" .env
+sed -i "s/DB_PASSWORD=.*/DB_PASSWORD=${dbpass}/" .env
+
+# إنشاء قاعدة البيانات لو مش موجودة
+echo "🗄️  Checking if database exists..."
+DB_EXISTS=$(mysql -u${dbuser} -p${dbpass} -e "SHOW DATABASES LIKE '${dbname}';" 2>/dev/null | grep "${dbname}" > /dev/null; echo $?)
+
+if [ $DB_EXISTS -ne 0 ]; then
+    echo "📦 Creating database '${dbname}'..."
+    mysql -u${dbuser} -p${dbpass} -e "CREATE DATABASE \`${dbname}\`;" || { echo "❌ Failed to create database."; exit 1; }
+else
+    echo "✅ Database '${dbname}' already exists."
+fi
+
+echo "🔑 Generating app key..."
+php artisan key:generate
+
+echo "📦 Running composer update..."
+composer update
+
+echo "🧱 Running migrations..."
+php artisan migrate --seed || { echo "❌ Migration failed."; exit 1; }
+
+echo "✅ Setup complete!"

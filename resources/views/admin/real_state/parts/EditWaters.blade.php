@@ -1,0 +1,44 @@
+<form method="POST" id="updateElectricOrWaterForm" class="addForm2" enctype="multipart/form-data"
+    action="{{ $updateRoute }}">
+    @csrf
+    @method('PUT')
+    <div class="row ">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label for="water_name" class="form-control-label">{{ trns('meter_name') }} <span
+                        class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="water_name" value="{{ $obj->water_name }}"
+                    name="water_name" required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="form-group">
+                <label for="water_account_number" class="form-control-label">{{ trns('water_account_number') }}
+                    <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" id="water_account_number"
+                    value="{{ $obj->water_account_number }}" name="water_account_number" required>
+            </div>
+        </div>
+
+
+
+
+
+        <div class="col-6">
+            <div class="form-group">
+                <label for="water_meter_number" class="form-control-label">{{ trns('water_meter_number') }}
+                    <span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="water_meter_number"
+                    value="{{ $obj->water_meter_number }}" id="water_meter_number">
+            </div>
+        </div>
+
+
+
+
+    </div>
+</form>
+
+
+@section('ajaxCalls')
+@endsection
